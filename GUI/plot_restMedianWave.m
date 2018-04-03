@@ -26,4 +26,5 @@ set(gca,'GridColor',[1 0 0 ],'MinorGridColor',[0.8 0 0],'GridAlpha',0.25,'MinorG
 set(gca,'XTick',0:0.2:t(end));
 set(gca,'YTickLabel','');
 set(gca,'XTickLabel','');
+
 hold off;

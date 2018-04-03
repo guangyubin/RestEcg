@@ -7,7 +7,7 @@ path = 'D:\MGCDB\muse\';
 fs = 500;
 ii = 7;
 res = [];
-for ii =  1:length(datalist)
+for ii = 301 % 1:length(datalist)
  
     %1. creat .hea file
     record = sprintf('%05d' , ii );
@@ -19,32 +19,18 @@ for ii =  1:length(datalist)
     %2. beat_detector, get the 'ate' files
     qrsname = sprintf('%05d.qrs' , ii );
     atename = sprintf('%05d.ate' , ii );
-    II = datalist(ii).wave(1:2:end,2)';
-    V2 = datalist(ii).wave(1:2:end,4)';
-     V3 = datalist(ii).wave(1:2:end,5)';
 
-  
-%     matmgc('beat_detector',x,250,fullfile(path,qrsname));
-%     qrs = matmgc('loadmgcqrs',fullfile(path,qrsname(1:end-4)));
-%     qrs2atr(fullfile(path,atename),qrs);
-%     beat1 = readannot(fullfile(path,atename));
-    
-%     qrs = matmgc('beat_detector',(II+V2)/2,250);
-%     maxtype = FindMaxType(qrs.qrs(1,:));
-%     qrs.anntyp(1:end) = 'V';
-%     qrs.anntyp(qrs.qrs(1,:)==maxtype) = 'N';
-    
-    qrs = matmgc('beat_detector_classify',(II+V2)/2,250);
+    data = datalist(ii).wave;
+    fs = 500;
+  [dataout, qrs, meanwave, pqrst] = ProcRestEcg_v4(data,fs);
+%  qrs = matmgc('mat_restecg_Process',data*200,fs,200);
     maxtype = FindMaxType(qrs.qrs(1,:));
     qrs.anntyp(1:end) = 'V';
     qrs.anntyp(qrs.qrs(1,:)==maxtype) = 'N';
-%     maxtype = FindMaxType(qrs.qrs(1,:));
-%     qrs.anntyp(1:end) = 'V';
-%     qrs.anntyp(qrs.qrs(1,:)==maxtype) = 'N';
-
     qrs2atr(fullfile(path,atename),qrs);
        
     %3. creat the 'atr' 
+    
     beat.time = floor(datalist(ii).rpos'/2);
     type = [];
     maxtype = FindMaxType(datalist(ii).QRStype);
@@ -60,11 +46,11 @@ for ii =  1:length(datalist)
     writeannot(fullfile(path,atrname),beat);
     beat0 = readannot(fullfile(path,atrname));    
     %4. use the bxb to compare the 'atr' and 'ate'
-   res(ii,:)= matmgc('mit_bxb',path,record,'atr','ate','00:00')';
+   res(ii,:)= matmgc('mit_bxb',path,record,'atr','ate','00:01')';
 end;
 
 clear matmgc
-%%
+
 A1 = sum(res,1);
 disp("Sen    | PPV    | Sen    | PPV    | Sen    | PPV    |");
 str = sprintf('%.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f | %.4f',...

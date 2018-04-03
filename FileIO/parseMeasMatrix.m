@@ -1,5 +1,5 @@
 %%
-[wave,rpos,QRStype,wave_median,sr,label,Meas,Meas_Orig,diag,diag_orig,Meas_Matrix1,adu,PatientID]= musexmlread('C:\Users\BJUT_BME\Desktop\整理数据\Y0249973.xml');
+[wave,rpos,QRStype,wave_median,sr,label,Meas,Meas_Orig,diag,diag_orig,Meas_Matrix1,adu,PatientID]= musexmlread('D:\DataBase\MUSE\MUSE_20130414_165613_52000.xml');
  [wave,rpos,QRStype,wave_median,sr,label,Meas,Meas_Orig,diag,diag_orig,Meas_Matrix2,adu,PatientID]= musexmlread('C:\Users\BJUT_BME\Desktop\整理数据\C448566.xml');
   [wave,rpos,QRStype,wave_median,sr,label,Meas,Meas_Orig,diag,diag_orig,Meas_Matrix3,adu,PatientID]= musexmlread('C:\Users\BJUT_BME\Desktop\整理数据\C539104.xml');
   [wave,rpos,QRStype,wave_median,sr,label,Meas,Meas_Orig,diag,diag_orig,Meas_Matrix4,adu,PatientID]= musexmlread('C:\Users\BJUT_BME\Desktop\整理数据\D804483.xml');
