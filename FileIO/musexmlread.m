@@ -2,7 +2,8 @@ function [wave,rpos,QRStype,wave_median,sr,label,Meas,Meas_Orig,diag,diag_orig,M
     = musexmlread(fname)
 % 1307 1452 1869
 
-
+wave = [];rpos=[];QRStype=[];wave_median=[];sr=[];label = [];
+Meas=[];Meas_Orig=[];diag=[];diag_orig=[];Meas_Matrix=[];adu=[];PatientID=[];
 
 % fname = fullfile('D:\DataBase\MUSE',list(1869).name);
 
@@ -29,6 +30,9 @@ if length(idx0)~= length(idx1)
 end
 [PatientID,iend]= museGetPatientID(str,idx0,idx1,1);
 [Meas,iend]= museGetRestingECGMeasurements(str,idx0,idx1,iend);
+if isempty(Meas) ||iend > 200
+    return;
+end;
 [Meas_Orig,iend]= museGetOriginalRestingECGMeas(str,idx0,idx1,iend);
 [diag,iend] = museGetDiagnosis(str,idx0,idx1,iend);
 [diag_orig,iend] = museGetOriginalDiagnosis(str,idx0,idx1,iend);

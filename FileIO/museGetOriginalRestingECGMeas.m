@@ -1,5 +1,7 @@
 
 function [Meas,ii]= museGetOriginalRestingECGMeas(str,idx0,idx1,istart)
+Meas = [];
+ii = [];
 m = 1;
 n = 1;
 ss = 0;

@@ -44,7 +44,8 @@ Meas = datalist(ii).Meas;
 
 end
 %%
-for ii = 1: size(param0,1)
+disp('================================================')
+for ii = 1: 4
     meas_qt(param0(ii,:),param1(ii,:));
 end
 

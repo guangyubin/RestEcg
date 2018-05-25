@@ -1,8 +1,10 @@
 
-function plot_restEcg(ecg,fs,rpos,type, txtpos , pqtpos )
+function plot_restEcg(ecg,fs,rpos,type, txtpos ,clr ,pqtpos , bline )
 
 if nargin < 6
     pqtpos = [];
+    clr = 'k'
+    bline = 0 ;
 end;
 % ecg = DATA(1).wave;
 % rpos = DATA(1).rpos;
@@ -16,7 +18,7 @@ t = ( 1:size(ecg,1))/fs;
 for ii = 1 : size(ecg,2)
     x = ecg(:,ii);
     x = x - mean(x);
-    plot(t,x-4*ii,'k');hold on;
+    plot(t,x-4*ii,clr);hold on;
     
     text(-0.3,-4*ii,labelname(ii),'Color','b');
 end
@@ -27,6 +29,12 @@ for ii =1:length(rpos)
     else
         text(rpos(ii)/fs,txtpos,num2str(type(ii)),'Color','r');
     end
+    if bline == 1
+    if rpos(ii) > 0 
+    plot([t(rpos(ii)) t(rpos(ii))], [-32 0],'k');
+    end
+    end
+    
 end;
 grid on;
 

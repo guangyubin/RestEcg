@@ -46,3 +46,6 @@ end
 if ss ==0 
     ii = istart;
 end;
+if ii - istart > 30
+    ii = istart ;
+end;

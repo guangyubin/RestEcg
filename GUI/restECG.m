@@ -1,3 +1,4 @@
+
 function varargout = restECG(varargin)
 % RESTECG MATLAB code for restECG.fig
 %      RESTECG, by itself, creates a new RESTECG or raises the existing
@@ -22,16 +23,16 @@ function varargout = restECG(varargin)
 
 % Edit the above text to modify the response to help restECG
 
-% Last Modified by GUIDE v2.5 29-Mar-2018 16:37:00
+% Last Modified by GUIDE v2.5 08-Apr-2018 10:34:42
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @restECG_OpeningFcn, ...
-                   'gui_OutputFcn',  @restECG_OutputFcn, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @restECG_OpeningFcn, ...
+    'gui_OutputFcn',  @restECG_OutputFcn, ...
+    'gui_LayoutFcn',  [] , ...
+    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -64,7 +65,7 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = restECG_OutputFcn(hObject, eventdata, handles) 
+function varargout = restECG_OutputFcn(hObject, eventdata, handles)
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -73,43 +74,62 @@ function varargout = restECG_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
-handles.datafromxml = 1;
+
+handles.datafromxml = 0;
 if handles.datafromxml ==1
+    handles.suf = '*.xml';
+    drt = {'D:\DataBase\Muse'};
+    m = length(drt);
+    list = dir('D:\DataBase\MUSE_Classify');
+    for ii = 1:length(list)
+        if list(ii).isdir==1 && isempty(strfind(list(ii).name,'.'))
+            m = m +1;
+            drt{m} = fullfile('D:\DataBase\MUSE_Classify',list(ii).name);
+        end
+    end
     
-    handles.path = 'D:\DataBase\MuseLargError\';
-    set(handles.listbox1,'string', listname(handles.path ));
+        list = dir('D:\MGCDB\MUSE_Classify\');
+    for ii = 1:length(list)
+        if list(ii).isdir==1 && isempty(strfind(list(ii).name,'.'))
+            m = m +1;
+            drt{m} = fullfile('D:\MGCDB\MUSE_Classify\',list(ii).name);
+        end
+    end
+    
+    set(handles.listbox4,'string', drt);
+    contents = cellstr(get(handles.listbox4,'String'));
+    handles.filepath = contents{1};
+    
+    set(handles.listbox1,'string', listname(handles.filepath));
+    
+    %     handles.path = 'D:\DataBase\MuseLargError\';
+    %     set(handles.listbox1,'string', listname(handles.path ));
 else
-   % a = load('D:\MGCDB\muse\musedb_500Hz.mat');
-    handles.DATA = a.DATA;
-    name = [];
-    for ii = 1:length(handles.DATA)
-        aa(ii) = sum(handles.DATA(ii).QRStype);
-    end
-    [a, index] = sort(aa);
-    for ii = 1:length(index)
-        name{ii} = num2str(index(ii));
-        aa(ii) = sum(handles.DATA(ii).QRStype);
-    end
-    
-    handles.DATA  = handles.DATA (index);
-    set(handles.listbox1,'string', name);
-    handles.index = 1;
+    m = 1;
+    handles.suf = '*.mat';
+    list = dir('D:\MGCDB\muse\classify');
+    for ii = 1:length(list)
+        if list(ii).isdir==1 && isempty(strfind(list(ii).name,'.'))
+            m = m +1;
+            drt{m} = fullfile('D:\MGCDB\muse\classify',list(ii).name);
+        end
+    end        
+    set(handles.listbox4,'string', drt);
+    contents = cellstr(get(handles.listbox4,'String'));
+    handles.filepath = contents{1};    
+    set(handles.listbox1,'string', listname(handles.filepath,'*.mat'));
 end
 guidata(hObject, handles);
 
 
 function show_ecg(handles)
 
-if handles.datafromxml ==1
-   DATA = handles.Data;
+
+    DATA = handles.Data;
     assignin('base','DATA',DATA);%
     assignin('base','fname',handles.fname);%
-%      assignin('base','index',handles.index);%
-else    
-    DATA = handles.DATA(handles.index) ;
-    assignin('base','DATA',DATA);%
-    assignin('base','index',handles.index);%
-end
+    %      assignin('base','index',handles.index);%
+
 
 ecg = DATA.wave_median*DATA.adu/1000;
 fs = DATA.fs;
@@ -122,18 +142,32 @@ pqrst = [DATA.Meas.POnset,DATA.Meas.POffset,...
 
 
 % [data, qrs, qrs2, meanwave, pqrst2] = ProcRestEcg(DATA.wave,fs);
-  [data, meanwave,rpos,QRStype, pqrst2, ecgmeas2] = ProcRestEcg(DATA.wave,fs);
+% [data, meanwave,rpos,QRStype, pqrst2, ecgmeas2] = ProcRestEcg(DATA.wave,fs);
+%  fid = fopen('D:\\9.dat','wb');fwrite(fid,200*DATA.wave,'int32');fclose(fid);
+%   fid = fopen('D:\\9.dat','rb'); d = fread(fid,[5000 8],'int32');fclose(fid);
+  
+  [meanwave, rpos,QRStype ,pqrst2,ecgmeas2 , dataout]  = matmgc('mat_restecg_Process',floor(200*DATA.wave),fs,200);
+  
+     assignin('base','dataout',dataout);%
+    assignin('base','meanwave',meanwave);%
+         assignin('base','rpos',rpos);%
 
+  meanwave = meanwave/200;
+  
+  
 axes(handles.axes1);
 get(handles.axes1,'position');
 
-plot_restEcg(DATA.wave,DATA.fs,DATA.rpos,DATA.QRStype, -1  )
-
-% hold on;plot_restEcg(data,250,qrs.time,qrs.anntyp,-2); 
-hold on;plot_restEcg(data,250,rpos,QRStype,-3); 
+plot_restEcg(DATA.wave,DATA.fs,DATA.rpos,DATA.QRStype, -1  ,'k',[],0)
+hold on; 
+plot_restEcg(dataout/200,250,rpos - 100 + pqrst2(4)- double(ecgmeas2.PRInterval)/4,QRStype, -2 ,'r',[],1 );
+% plot_restEcg(dataout/200,250,rpos - 100 + pqrst2(4),QRStype, -2 ,'r',[],1 );
+% hold on;plot_restEcg(data,250,qrs.time,qrs.anntyp,-2);
+% hold on;plot_restEcg(data,250,rpos,QRStype,-3);
 % hold on;plot_restEcg(data,250,qrs2.time,qrs2.anntyp,-4);
 hold off;
 
+clear matmgc;
 
 % plot_restEcg(DATA.wave,DATA.fs,DATA.rpos*250/DATA.fs,DATA.QRStype, -1  )
 
@@ -175,6 +209,18 @@ set(handles.alg18,'String',ecgmeas2.RAxis);
 set(handles.alg19,'String',ecgmeas2.TAxis);
 set(handles.alg110,'String',ecgmeas2.QRSCount);
 
+diag = [];
+for ii = 1:length(DATA.diag)
+    diag = [diag '  '  DATA.diag{ii}];
+end;
+set(handles.DiagInfo,'String',diag);
+
+diag_orig = [];
+for ii = 1:length(DATA.diag_orig)
+    diag_orig = [diag_orig '  '  DATA.diag_orig{ii}];
+end;
+set(handles.DiagOrig,'String',diag_orig);
+
 
 set(handles.dif11,'String',str2double(get(handles.m1,'String'))-str2double(get(handles.alg11,'String')));
 set(handles.dif12,'String',str2double(get(handles.m2,'String'))-str2double(get(handles.alg12,'String')));
@@ -198,8 +244,8 @@ set(handles.alg114,'String',pqrst2(6)/250*1000);
 set(handles.m15,'String',pqrst(5)/250*1000);
 set(handles.alg115,'String',pqrst2(9)/250*1000);
 
-set(handles.m16,'String',DATA.Meas.ECGSampleBase);
-set(handles.m17,'String',DATA.Meas.ECGSampleExponent);
+% set(handles.m16,'String',DATA.Meas.ECGSampleBase);
+% set(handles.m17,'String',DATA.Meas.ECGSampleExponent);
 set(handles.m18,'String',DATA.Meas.QTcFrederica);
 
 
@@ -251,24 +297,29 @@ function listbox1_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns listbox1 contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from listbox1
 
-if handles.datafromxml ==1
     fname = get(handles.listbox1,'string');
-    fname = fullfile(handles.path,fname{get(hObject,'Value')});
+    fname = fullfile(handles.filepath,fname{get(hObject,'Value')});
+if handles.datafromxml ==1
+
     [handles.Data.wave,handles.Data.rpos,handles.Data.QRStype,handles.Data.wave_median,handles.Data.fs,handles.Data.label,...
         handles.Data.Meas,...
         handles.Data.Meas_Orig,handles.Data.diag,handles.Data.diag_orig,handles.Data.Meas_Matrix,handles.Data.adu,handles.Data.PatientID]...
         = musexmlread(fname);
-    handles.fname = fname;
-    handles.Data.wave = handles.Data.wave*handles.Data.adu/1000;
-%     if handles.Data.fs== 250
-        handles.Data.rpos = handles.Data.rpos*250/handles.Data.fs;
-%     else
-%          handles.Data.rpos = handles.Data.rpos/2;
-%     end;
-        
+ 
+
+    %     else
+    %          handles.Data.rpos = handles.Data.rpos/2;
+    %     end;
+    
 else
+
+    load(fname);
+    handles.Data = DATA;
     handles.index = get(hObject,'Value');
 end
+    handles.Data.wave = handles.Data.wave*handles.Data.adu/1000;
+    handles.Data.rpos = handles.Data.rpos*250/handles.Data.fs;
+   handles.fname = fname;
 show_ecg(handles)
 guidata(hObject, handles);
 
@@ -276,11 +327,20 @@ guidata(hObject, handles);
 %     assignin('base','DATA',handles.Data);%
 %     assignin('base','fname',fname);%
 
-function name = listname(path)
-list = dir([path '\*.xml']);
-for ii = 1:length(list)
-    name{ii} = list(ii).name;
-end;
+function name = listname(path,suff)
+
+if(exist(fullfile(path,'sortlist.mat'),'file'))   
+    load(fullfile(path,'sortlist.mat'));
+    
+    name = listname2;
+else
+    
+    list = dir(fullfile(path ,suff));
+    name = [];
+    for ii = 1:length(list)
+        name{ii} = list(ii).name;
+    end;
+end
 
 % --- Executes during object creation, after setting all properties.
 function listbox1_CreateFcn(hObject, eventdata, handles)
@@ -313,4 +373,38 @@ for i=1:5
         r=['r',num2str(i),num2str(j)];
         set(handles.(r),'String',res(i,j));
     end
+end
+
+
+% --- Executes on selection change in listbox4.
+function listbox4_Callback(hObject, eventdata, handles)
+% hObject    handle to listbox4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns listbox4 contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from listbox4
+contents = cellstr(get(hObject,'String'));
+handles.filepath = contents{get(hObject,'Value')};
+ if ~isempty(listname(handles.filepath,handles.suf))
+    set(handles.listbox1,'string', listname(handles.filepath,handles.suf));
+    set(handles.listbox1,'value',1);
+    fname = get(handles.listbox1,'string');
+    guidata(handles.output,handles);
+    fullfile(handles.filepath,fname{1})
+    guidata(handles.output,handles);
+ else
+      set(handles.listbox1,'string', listname(handles.filepath));
+ end
+
+% --- Executes during object creation, after setting all properties.
+function listbox4_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to listbox4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
 end

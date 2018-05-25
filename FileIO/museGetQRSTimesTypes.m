@@ -1,4 +1,8 @@
 function [rpos,QRStype,ii] = museGetQRSTimesTypes(str,idx0,idx1,istart)
+
+rpos = [];
+QRStype = [];
+ii = [];
 m = 1;
 n = 1;
 ss = 0;

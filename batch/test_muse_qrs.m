@@ -22,7 +22,8 @@ for ii = 301 % 1:length(datalist)
 
     data = datalist(ii).wave;
     fs = 500;
-  [dataout, qrs, meanwave, pqrst] = ProcRestEcg_v4(data,fs);
+%   [dataout, qrs, meanwave, pqrst] = ProcRestEcg(data,fs);
+    [dataout, meanwave, rpos,QRStype,  pqrst , ecgmeas] = ProcRestEcg(wave*adu/1000,fs);
 %  qrs = matmgc('mat_restecg_Process',data*200,fs,200);
     maxtype = FindMaxType(qrs.qrs(1,:));
     qrs.anntyp(1:end) = 'V';

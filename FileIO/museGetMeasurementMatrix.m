@@ -1,5 +1,6 @@
 function [Meas_Matrix,ii]= museGetMeasurementMatrix(str,idx0,idx1,istart)
-
+Meas_Matrix = [];
+ii = [];
 ss = 0;
 kk = 1;
 for ii = istart:length(idx0)
