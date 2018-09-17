@@ -36,7 +36,7 @@ parfor mm = 1: length(fname_list)
      fname = fname_list{mm};
     [wave,rpos,QRStype,wave_median,fs,label,Meas,Meas_Orig,diag,diag_orig,Meas_Matrix,adu,PatientInfo]=musexmlread(fname);
     if ~isempty(wave)
-        [meanwave, rpos,QRStype ,pqrst,ecgmeas]  = matmgc('mat_restecg_Process',floor(200*wave*adu/1000),fs,200);
+        [meanwave, rpos,QRStype ,pqrst,ecgmeas]  = matrestecg('mat_restecg_Process',floor(200*wave*adu/1000),fs,200);
         
         names = fieldnames(Meas);
         for ii = 1:length(names)

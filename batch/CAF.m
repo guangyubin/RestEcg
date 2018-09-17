@@ -1,0 +1,83 @@
+
+path = 'D:\MGCDB\muse\classify\正常心电图';
+list = dir(fullfile(path ,'*.mat'));
+listname = [];
+ratio1 = [];
+ratio2 = [];
+metric_Regular = [];
+AF_Ft = [];
+m = 1;
+for ii = 1:length(list)
+    fname = fullfile(path,list(ii).name);
+    load(fname);
+    [meanwave, rpos,QRStype ,ppos,pqrst, ecgmeas , wave , pout , pmeanwave, pchan,av,metric_Regular(m),AF_Ft(:,m)]  = matrestecg('mat_restecg_Process',floor(200*DATA.wave*DATA.adu/1000),DATA.fs,200);
+    [ ratio1(m) , ratio2(m)] = fwaveDetect(pout,rpos);
+     group(m) = 1;
+     m = m +1;
+    listname{ii} = list(ii).name;
+end
+listname2 = [];
+[v, index] = sort(ratio1);
+for ii = 1:length(listname)
+    [filepath,name,ext] = fileparts(listname{index(ii)});
+    listname2{ii} = [name ext];
+end
+
+save(fullfile(path,'sortlist.mat'),'listname2');
+%%
+path = 'D:\MGCDB\muse\classify\心房扑动';
+list = dir(fullfile(path ,'*.mat'));
+for ii = 1:length(list)
+    fname = fullfile(path,list(ii).name);
+    load(fname);
+    [meanwave, rpos,QRStype ,ppos,pqrst, ecgmeas , wave , pout , pmeanwave, pchan,av,metric_Regular(m),AF_Ft(:,m)]  = matrestecg('mat_restecg_Process',floor(200*DATA.wave*DATA.adu/1000),DATA.fs,200);
+    [ ratio1(m) , ratio2(m)] = fwaveDetect(pout,rpos);
+     group(m) = 2;
+     m = m +1;
+    listname{ii} = list(ii).name;
+end
+
+path = 'D:\MGCDB\muse\classify\室上性心动过速';
+list = dir(fullfile(path ,'*.mat'));
+for ii = 1:length(list)
+    fname = fullfile(path,list(ii).name);
+    load(fname);
+    [meanwave, rpos,QRStype ,ppos,pqrst, ecgmeas , wave , pout , pmeanwave, pchan,av,metric_Regular(m),AF_Ft(:,m)]  = matrestecg('mat_restecg_Process',floor(200*DATA.wave*DATA.adu/1000),DATA.fs,200);
+    [ ratio1(m) , ratio2(m)] = fwaveDetect(pout,rpos);
+     group(m) = 3;
+     m = m +1;
+    listname{ii} = list(ii).name;
+end
+
+path = 'D:\MGCDB\muse\classify\心房颤动';
+list = dir(fullfile(path ,'*.mat'));
+for ii = 1:length(list)
+    fname = fullfile(path,list(ii).name);
+    load(fname);
+    [meanwave, rpos,QRStype ,ppos,pqrst, ecgmeas , wave , pout , pmeanwave, pchan,av,metric_Regular(m),AF_Ft(:,m)]  = matrestecg('mat_restecg_Process',floor(200*DATA.wave*DATA.adu/1000),DATA.fs,200);
+     [ ratio1(m) , ratio2(m)] = fwaveDetect(pout,rpos);
+    
+
+     group(m) = 4;
+     m = m +1;
+    listname{ii} = list(ii).name;
+end
+%%
+
+list  = find(group==1 | group ==4 | group ==3| group ==2);
+X= cat(1,ratio1,metric_Regular)';
+X = AF_Ft';
+% X = metric_Regular';
+Y = group';
+X = X(list,:);
+Y = Y(list);
+Y(Y==4) = 3;
+Y(Y==2) = 3;
+Mdl7 = fitctree(X,Y,'MaxNumSplits',8,'CrossVal','on');
+
+classError7 = kfoldLoss(Mdl7)
+view(Mdl7.Trained{1},'Mode','graph')
+%%
+figure;gscatter(ratio1,ratio2,group);
+%%
+figure;plot(ratio1(group==2),ratio2(group==2),'.r')

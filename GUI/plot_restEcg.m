@@ -13,7 +13,17 @@ end;
 % txtpos = -1;
 rpos  = double(rpos);
 
-labelname = {'I','II','V1', 'V2','V3','V4','V5','V6'};
+labelname = {'I','II', 'III', 'avR', 'avL', 'avF', 'V1', 'V2','V3','V4','V5','V6'};
+ecg12 =  zeros(size(ecg, 1), 12);
+ecg12(:, 1) = ecg(:, 1);
+ecg12(:, 2) = ecg(:, 2);
+ecg12(:,3) = ecg(:, 2)  - ecg(:, 1);
+ecg12(:,4) = -(ecg(:, 1) + ecg(:, 2))/2;
+ecg12(:, 5) = ecg(:, 1)  - ecg(:, 2)/2;
+ecg12(:, 6) = ecg(:, 2)  - ecg(:, 1)/2;
+ecg12(:,7:12) = ecg( :,3:8);
+ecg =ecg12;
+
 t = ( 1:size(ecg,1))/fs;
 for ii = 1 : size(ecg,2)
     x = ecg(:,ii);

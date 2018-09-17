@@ -37,6 +37,7 @@ end;
 [diag,iend] = museGetDiagnosis(str,idx0,idx1,iend);
 [diag_orig,iend] = museGetOriginalDiagnosis(str,idx0,idx1,iend);
 [Meas_Matrix,iend]= museGetMeasurementMatrix(str,idx0,idx1,iend);
+
 [rpos,QRStype,iend] = museGetQRSTimesTypes(str,idx0,idx1,iend);
 [wave_median,adu,label1,sr1,iend]= museGetMedianWaveform(str,idx0,idx1,iend);
 [wave,adu2,label2,sr2,iend]= museGetRhythmWaveform(str,idx0,idx1,iend);
